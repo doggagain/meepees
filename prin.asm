@@ -10,6 +10,8 @@ msg1: .asciiz "The first number: "
 result: .asciiz "\nThe sum is:  "
 resultFour: .asciiz "\nThe sum of divisble by four is:  "
 newLine: .asciiz "\nThe number in unsigned base 4: "
+newLineSign: .asciiz "\nThe number in signed base 4: "
+minus: .asciiz "-"
 initGetBase4: .word 3
 .text
 
@@ -45,7 +47,7 @@ add $s4,$s4,$t3
 
 not_by_four:
 
-
+move $s6, $t3  
 la $t7, initGetBase4
 lw $t7,0($t7)
 
@@ -66,6 +68,36 @@ syscall
 
 srl $t3,$t3,2
 bne $t3,0,get_4_base_next
+
+#print new line for part c 
+li $v0,4
+la $a0,newLineSign
+syscall
+#end print new line for part c 	
+
+slt $s7, $s6, $zero      #is value < 0 ?
+beq $s7, $zero, positive  #if r1 is positive, skip next inst
+sub $s6, $zero, $s6      #r2 = 0 - r1
+#print new line for part c 
+li $v0,4
+la $a0,minus
+syscall
+#end print new line for part c 	
+
+positive:
+
+
+get_4_base_next_sign:
+and $s5,$s6,$t7
+
+#print digit base 4
+li $v0,1
+move $a0,$s5
+syscall
+#end print
+
+srl $s6,$s6,2
+bne $s6,0,get_4_base_next_sign
 
 
 j get_next
