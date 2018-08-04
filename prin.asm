@@ -1,4 +1,5 @@
 .data
+placeholder: .word 0
 num1: .word -1, num3
 num2: .word 17, 0
 num3: .word 32, num5
@@ -22,20 +23,9 @@ la $t2, sum
 lw $t4,0($t2)
 
 la $t2, num1
-lw $t3,0($t2)
-
-add $t4,$t4,$t3
-
-andi $s1,$t3,3
-bne $s1,0,get_next
-
-add $s4,$s4,$t3
 
 get_next:
-lw $t5,4($t2)
-beq $t5,0,end
 
-move $t2, $t5
 lw $t3,0($t2)
 
 add $t4,$t4,$t3
@@ -99,6 +89,10 @@ syscall
 srl $s6,$s6,2
 bne $s6,0,get_4_base_next_sign
 
+lw $t5,4($t2)
+beq $t5,0,end
+
+move $t2, $t5
 
 j get_next
 
