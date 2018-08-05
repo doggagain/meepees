@@ -9,7 +9,12 @@ cantBeZero: .asciiz "\nrt is zero in lw command"
 rTypeRdZero: .asciiz "\nrd is zero in r_type command"
 rtRsBeqEqual: .asciiz "\nrt and rs are equal in beq command"
 opCodeNotRecognized: .asciiz "\nop code is not recognized"
-
+forRegister: .asciiz "\nfor register: "
+printRtype: .asciiz "\nr_type: "
+printlw: .asciiz "\nlw : "
+printsw: .asciiz "\nsw: "
+printbeq: .asciiz "\nbeq: "
+colon: .asciiz " : "
 .text
 
 xor $s2,$s2,$s2 #init $s2 to be counter for command loop 
@@ -175,3 +180,79 @@ addi $s2,$s2,1
 j get_next
 
 done:
+xor $s2,$s2,$s2 #init $s2 to be counter for command loop 
+
+print_next_register:
+
+la $t8,registerCounter # for current register
+sll $t9,$s2,2 
+add $t8,$t8,$t9
+lw $s0,0($t8)
+
+beq $s0,0,shouldnt_print_0
+
+li $v0,4
+la $a0,forRegister
+syscall
+ 
+li $v0,1
+move $a0,$s2
+syscall
+
+li $v0,4
+la $a0,colon
+syscall
+
+li $v0,1
+move $a0,$s0
+syscall
+
+shouldnt_print_0:
+addi $s2,$s2,1
+beq $s2,32,end
+j print_next_register
+
+end:
+la $s1,r_type_count# print for r_type
+lw $s0,0($s1)
+
+li $v0,4
+la $a0,printRtype
+syscall
+
+li $v0,1
+move $a0,$s0
+syscall
+
+la $s1,lw_count #print for lw 
+lw $s0,0($s1)
+
+li $v0,4
+la $a0,printlw
+syscall
+
+li $v0,1
+move $a0,$s0
+syscall
+
+la $s1,sw_count #print for sw 
+lw $s0,0($s1)
+
+li $v0,4
+la $a0,printsw
+syscall
+
+li $v0,1
+move $a0,$s0
+syscall
+
+la $s1,beq_count #print for beq
+lw $s0,0($s1)
+
+li $v0,4
+la $a0,printbeq
+syscall
+
+li $v0,1
+move $a0,$s0
+syscall
