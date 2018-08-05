@@ -1,5 +1,5 @@
 .data
-TheCode: .word 0x014B4820, 0x012A4822, 0xFFFFFFFF
+TheCode: .word 0x014B4820, 0x012A4822, 0x8f0e0000, 0x1032005a, 0x1021005a,0xae300000, 0xFFFFFFFF
 registerCounter: .word 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 r_type_count: .word 0
 lw_count: .word 0
@@ -66,10 +66,10 @@ srl $t6,$t6,6
 
 #increase in registerCounter rs,rt
 
-add $a0,$zero,$t2
-add $a1,$zero,$t3
+add $a0,$zero,$t3
+add $a1,$zero,$t4
 
-jal increase_rt_rs
+jal increase_rt_rs #call increase_rt_rs procedure  
 
 beq $t5,0,do_r_type
 
@@ -77,13 +77,10 @@ j do_i_type
 
 
 do_r_type: #####r_type
-la $t8,registerCounter #count for rd
-sll $t9,$t2,2 
-add $t8,$t8,$t9
-lw $s0,0($t8)
 
-addi $s0,$s0,1
-sw $s0,0($t8)
+add $a0,$zero,$t2
+
+jal count_rd_r_type
 
 la $s1,r_type_count# count for r_type
 lw $s0,0($s1)
@@ -118,13 +115,13 @@ syscall
 j after_i_r_sorting
 
 is_beq: #beq
-la $s1,r_type_count
+la $s1,beq_count
 lw $s0,0($s1)
 
 addi $s0,$s0,1
 sw $s0,0($s1)
 
-beq $t3,$t3,print_rt_rs_beq_equal #check for rs rt equal beq
+beq $t3,$t4,print_rt_rs_beq_equal #check for rs rt equal beq
 j rt_rs_beq_not_equal
 
 print_rt_rs_beq_equal:
@@ -246,12 +243,13 @@ li $v0,1
 move $a0,$s0
 syscall
 
-j finish_program
+li $v0,10
+syscall
 
 increase_rt_rs:
 
-add $t2,$zero,$a0
-add $t3,$zero,$a1
+add $t3,$zero,$a0
+add $t4,$zero,$a1
 
 la $t8,registerCounter # for rt
 sll $t9,$t3,2 
@@ -271,4 +269,17 @@ sw $s0,0($t8)
 
 jr $ra
 
-finish_program:
+count_rd_r_type:
+
+add $t2,$zero,$a0
+
+la $t8,registerCounter #count for rd
+sll $t9,$t2,2 
+add $t8,$t8,$t9
+lw $s0,0($t8)
+
+addi $s0,$s0,1
+sw $s0,0($t8)
+
+jr $ra
+
