@@ -66,21 +66,10 @@ srl $t6,$t6,6
 
 #increase in registerCounter rs,rt
 
-la $t8,registerCounter # for rt
-sll $t9,$t3,2 
-add $t8,$t8,$t9
-lw $s0,0($t8)
+add $a0,$zero,$t2
+add $a1,$zero,$t3
 
-addi $s0,$s0,1
-sw $s0,0($t8)
-
-la $t8,registerCounter # for rs
-sll $t9,$t4,2 
-add $t8,$t8,$t9
-lw $s0,0($t8)
-
-addi $s0,$s0,1
-sw $s0,0($t8)
+jal increase_rt_rs
 
 beq $t5,0,do_r_type
 
@@ -256,3 +245,30 @@ syscall
 li $v0,1
 move $a0,$s0
 syscall
+
+j finish_program
+
+increase_rt_rs:
+
+add $t2,$zero,$a0
+add $t3,$zero,$a1
+
+la $t8,registerCounter # for rt
+sll $t9,$t3,2 
+add $t8,$t8,$t9
+lw $s0,0($t8)
+
+addi $s0,$s0,1
+sw $s0,0($t8)
+
+la $t8,registerCounter # for rs
+sll $t9,$t4,2 
+add $t8,$t8,$t9
+lw $s0,0($t8)
+
+addi $s0,$s0,1
+sw $s0,0($t8)
+
+jr $ra
+
+finish_program:
