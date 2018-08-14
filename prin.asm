@@ -13,7 +13,7 @@ resultFour: .asciiz "\nThe sum of divisble by four is:  "
 newLine: .asciiz "\nThe number in unsigned base 4: "
 newLineSign: .asciiz "\nThe number in signed base 4: "
 minus: .asciiz "-"
-initGetBase4: .word 3
+initGetBase4: .word 3221225472
 .text
 
 #part a
@@ -25,6 +25,8 @@ lw $t4,0($t2)
 la $t2, num1
 
 get_next:
+xor $t9,$t9,$t9 #flag to know whether to print 0 or not
+xor $t6,$t6,$t6 # counter for iterations
 
 lw $t3,0($t2)
 
@@ -49,6 +51,14 @@ syscall
 
 get_4_base_next:
 and $s5,$t3,$t7
+srl $s5,$s5,30
+
+beq $s5,0,maybe_not_print_because_zero
+
+or $t9,$t9,1
+
+maybe_not_print_because_zero:
+beq $t9,0,dont_print_zero
 
 #print digit base 4
 li $v0,1
@@ -56,14 +66,24 @@ move $a0,$s5
 syscall
 #end print
 
-srl $t3,$t3,2
-bne $t3,0,get_4_base_next
+dont_print_zero:
+
+sll $t3,$t3,2
+addi $t6,$t6,1 
+
+addi $t8,$zero,15
+slt $s2,$t8,$t6   # checks if $t6 > 16
+beq $s2,0,get_4_base_next
+
 
 #print new line for part c 
 li $v0,4
 la $a0,newLineSign
 syscall
 #end print new line for part c 	
+
+xor $t9,$t9,$t9 #again flag for zero print 
+xor $t6,$t6,$t6# again for counter
 
 slt $s7, $s6, $zero      #is value < 0 ?
 beq $s7, $zero, positive  #if r1 is positive, skip next inst
@@ -79,6 +99,16 @@ positive:
 
 get_4_base_next_sign:
 and $s5,$s6,$t7
+srl $s5,$s5,30
+
+beq $s5,0,maybe_not_print_because_zero_sign
+
+or $t9,$t9,1
+
+
+maybe_not_print_because_zero_sign:
+
+beq $t9,0,dont_print_zero_sign
 
 #print digit base 4
 li $v0,1
@@ -86,8 +116,14 @@ move $a0,$s5
 syscall
 #end print
 
-srl $s6,$s6,2
-bne $s6,0,get_4_base_next_sign
+dont_print_zero_sign:
+
+sll $s6,$s6,2
+addi $t6,$t6,1 
+
+addi $t8,$zero,15
+slt $s2,$t8,$t6   # checks if $t6 > 16
+beq $s2,0,get_4_base_next_sign
 
 lw $t5,4($t2)
 beq $t5,0,end
