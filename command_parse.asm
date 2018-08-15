@@ -17,6 +17,52 @@ printbeq: .asciiz "\nbeq: "
 colon: .asciiz " : "
 .text
 
+#algorithm works as follows:
+#we take te array of commands to parse and parse 
+#them in a loop with
+#masking according to each size of the regions,
+#and saving each part in a specific register
+#list of registers is below.
+#
+#we then attend to increasing the relevant counters
+# according to the contents of each command part,
+#i.e. rt,rs,
+#
+#we check whether or not it is i ot r type,
+#
+#if it is, we treat r_type specific conditions
+#
+#if it is i_type, we differentiate whether it is sw,beq,lw
+#and treat each time if the special case happened or not for each one
+#
+#if command doesnt fit any opcode we alert the user
+#
+#after command handling we loop again unless we see ffffffff or passed 100
+#
+#after that, we print summary of all commands count
+#
+#registers:
+#t0 is funct 6 bits
+#t1 is shamt 5 bits
+#t2 is rd 5 bits
+#t3 is rt 5 bits 
+#t4 is rs 5 bits 
+#t5 is op 6 bits
+#$t6 to hold the current command
+#$t7 to get current mask 
+#$t8 to load from memory for print 
+#$t9 to hold offest in array to read
+#
+#$s0 to hold content of variable from memory
+#$s1 for loading variable from memory
+#$s2 to be counter for command loop 
+#
+#$a0 
+#$a1
+# both for args for procedures
+
+
+
 xor $s2,$s2,$s2 #init $s2 to be counter for command loop 
 
 get_next:
